@@ -11,9 +11,8 @@ from basictracer import Sampler, SpanRecorder
 
 import instana.singletons
 
-from .json_span import (CustomData, Data, HttpData, JsonSpan, MySQLData,
-                        RabbitmqData, RedisData, RPCData, SDKData, SoapData,
-                        SQLAlchemyData)
+from .json_span import (CustomData, Data, HttpData, JsonSpan, LogData, MySQLData,
+                        RabbitmqData, RedisData, RenderData, RPCData, SDKData, SoapData, SQLAlchemyData)
 from .log import logger
 
 if sys.version_info.major is 2:
@@ -23,7 +22,7 @@ else:
 
 
 class InstanaRecorder(SpanRecorder):
-    registered_spans = ("django", "memcache", "mysql", "rabbitmq", "redis",
+    registered_spans = ("django", "memcache", "mysql", "rabbitmq", "redis", "render",
                         "rpc-client", "rpc-server", "sqlalchemy", "soap", "urllib3", "wsgi")
     http_spans = ("django", "wsgi", "urllib3", "soap")
 
@@ -37,12 +36,12 @@ class InstanaRecorder(SpanRecorder):
 
     def __init__(self):
         super(InstanaRecorder, self).__init__()
-
-    def run(self):
-        """ Span a background thread to periodically report queued spans """
         self.timer = t.Thread(target=self.report_spans)
         self.timer.daemon = True
         self.timer.name = "Instana Span Reporting"
+
+    def run(self):
+        """ Span a background thread to periodically report queued spans """
         self.timer.start()
 
     def report_spans(self):
@@ -133,6 +132,12 @@ class InstanaRecorder(SpanRecorder):
                                params=span.tags.pop('rpc.params', None),
                                baggage=span.tags.pop('rpc.baggage', None),
                                error=span.tags.pop('rpc.error', None))
+
+        if span.operation_name == "render":
+            data.render = RenderData(name=span.tags.pop('name', None),
+                                     type=span.tags.pop('type', None))
+            data.log = LogData(message=span.tags.pop('message', None),
+                               parameters=span.tags.pop('parameters', None))
 
         if span.operation_name == "sqlalchemy":
             data.sqlalchemy = SQLAlchemyData(sql=span.tags.pop('sqlalchemy.sql', None),

@@ -7,13 +7,18 @@ class InstanaSpan(BasicSpan):
     def finish(self, finish_time=None):
         super(InstanaSpan, self).finish(finish_time)
 
-    def log_exception(self, e):
+    def log_exception(self, e, as_tag=False):
         if hasattr(e, 'message') and len(e.message):
-            self.log_kv({'message': e.message})
+            error_message = e.message
         elif hasattr(e, '__str__'):
-            self.log_kv({'message': e.__str__()})
+            error_message = e.__str__()
         else:
-            self.log_kv({'message': str(e)})
+            error_message = str(e)
+
+        if as_tag:
+            self.set_tag('message', error_message)
+        else:
+            self.log_kv({'message': error_message})
 
         self.set_tag("error", True)
         ec = self.tags.get('ec', 0)
