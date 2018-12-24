@@ -46,7 +46,7 @@ traces to your Instana dashboard.",
                         'urllib3>=1.18.1'],
       entry_points={
                     'instana':  ['string = instana:load'],
-                    'flask':    ['flask = instana.flaskana:hook'],
+                    'flask':    ['string = instana:load'],  # deprecated: use same as 'instana'
                     'runtime':  ['string = instana:load'],  # deprecated: use same as 'instana'
                     'django':   ['string = instana:load'],  # deprecated: use same as 'instana'
                     'django19': ['string = instana:load'],  # deprecated: use same as 'instana'

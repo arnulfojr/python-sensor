@@ -24,12 +24,6 @@ In any Python 2.7 or greater application, to manually enable the Instana sensor,
 
     import instana
 
-# Flask
-
-To enable the Flask instrumentation, set the following environment variable in your _application boot environment_ and then restart your application:
-
-  `export AUTOWRAPT_BOOTSTRAP=flask`
-
 # Django (Manual)
 
 When the `AUTOWRAPT_BOOTSTRAP=instana` environment variable is set, the Django framework should be automatically detected and instrumented.  If for some reason, you prefer to or need to manually instrument Django, you can instead add `instana.instrumentation.django.middleware.InstanaMiddleware` to your MIDDLEWARE list in `settings.py`:
