@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import opentracing.ext.tags as ext
 from flask import Flask, redirect, render_template, render_template_string
-from instana.wsgi import iWSGIMiddleware
 from wsgiref.simple_server import make_server
 from instana.singletons import tracer
 
@@ -88,7 +87,7 @@ def render_string():
 
 @app.route("/render_error")
 def render_error():
-    return render_template_string('hello {{ what }', what='world')
+    return render_template('flask_render_error.html', what='world')
 
 
 if __name__ == '__main__':

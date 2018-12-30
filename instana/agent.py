@@ -73,6 +73,10 @@ class Agent(object):
             self.handle_fork()
             return False
 
+        # Always return True when in the test suite
+        if "INSTANA_TEST" in os.environ:
+            return True
+
         if self.fsm.fsm.current == "good2go":
             return True
 
